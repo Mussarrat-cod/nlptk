@@ -1,0 +1,231 @@
+:root {
+  --bg: #12141c;
+  --card-bg: #1a1d27;
+  --card-border: #272b3a;
+  --chrome-bg: #20232f;
+  --text-primary: #e7e9f0;
+  --text-muted: #868ea3;
+  --text-faint: #565d72;
+  --accent: #e0a458;
+  --accent-soft: rgba(224, 164, 88, 0.14);
+  --code-text: #d7dceb;
+  --ok: #7fc98f;
+  --mono: 'Fira Code', 'Consolas', 'SFMono-Regular', Menlo, monospace;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--mono);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Header ---------- */
+
+.page-head {
+  border-bottom: 1px solid var(--card-border);
+  padding: 56px 24px 40px;
+}
+
+.head-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.prompt-line {
+  margin: 0 0 14px;
+  color: var(--accent);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.prompt-sign {
+  color: var(--text-faint);
+  margin-right: 8px;
+}
+
+.page-head h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.subhead {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+
+/* ---------- Grid ---------- */
+
+.snippet-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: 24px;
+}
+
+/* ---------- Card ---------- */
+
+.snippet-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-chrome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--chrome-bg);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dots span:nth-child(1) { background: #ff5f57; }
+.dots span:nth-child(2) { background: #febc2e; }
+.dots span:nth-child(3) { background: #28c840; }
+
+.card-filename {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-btn {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.copy-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.copy-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.copy-btn.copied {
+  background: rgba(127, 201, 143, 0.14);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.copy-btn.copy-failed {
+  background: rgba(255, 95, 87, 0.14);
+  border-color: #ff5f57;
+  color: #ff9891;
+}
+
+.card-label {
+  padding: 14px 18px 0;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-body {
+  padding: 14px 18px 18px;
+  overflow-x: auto;
+}
+
+pre {
+  margin: 0;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--code-text);
+  white-space: pre;
+  tab-size: 4;
+}
+
+/* ---------- Footer ---------- */
+
+.page-foot {
+  border-top: 1px solid var(--card-border);
+  padding: 20px 24px 40px;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
+
+.page-foot p {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+  .snippet-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-head {
+    padding: 40px 16px 28px;
+  }
+  .snippet-grid {
+    padding: 28px 16px 60px;
+  }
+  .card-chrome {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
