@@ -9,35 +9,22 @@ const SNIPPETS = [
     id: "1a",
     title: "1A — Sentence & Word Tokenization",
     file: "1a_tokenization.py",
-    code: `import nltk
-nltk.download('punkt')
-nltk.download('punkt_tab')
-from nltk.tokenize import sent_tokenize, word_tokenize
-def tokenize_sentences(text):
-    sentences = sent_tokenize(text)
-    return sentences
-def tokenize_words(text):
-    words = word_tokenize(text)
-    return words
-text = """NLTK is a leading platform for building Python programs to work with
-human language data. It provides easy
-to
-use interface to over 50 corpora and
-lexical resources such as WordNet, along with a suite of text processing libraries
-for classificati
-on, tokenization, stemming, tagging, parsing, and semantic
-reasoning, wrappers for industrial
-strength NLP libraries, and an active discussion
-forum."""
-sentences = tokenize_sentences(text)
-print(
-"Sentence Tokenization:")
-for i, sentence in enumerate(sentences):
-    print(f"Sentence {i+1}: {sentence}")
-words = tokenize_words(text)
-print("\\nWord Tokenization:")
-for i, word in enumerate(words):
-    print(f"Word {i+1}: {word}")`
+    code: `void setup() {
+  // put your setup code here, to run once:
+  pinMode(6, OUTPUT); 
+  pinMode(7, OUTPUT); 
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  digitalWrite(6,HIGH);
+  digitalWrite(7,LOW);
+  delay(500);
+
+  digitalWrite(7,HIGH);
+  digitalWrite(6,LOW);
+  delay(500);
+}
   },
   {
     id: "1b",
