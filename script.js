@@ -1,346 +1,253 @@
 // ---------------------------------------------------------------------------
-// Snippet data
-// Requested Arduino IoT Lab snippets: 1A, 1B, 1C, 2A, 2B, 3A, 3B, 3C.
+// Snippet data: NLP Lab Programs (5A, 5B, 6, 7, 8)
 // ---------------------------------------------------------------------------
 
 const SNIPPETS = [
   {
-    id: "1a",
-    title: "1A",
-    file: "1a.ino",
-    code: `void setup() {
-  // put your setup code here, to run once:
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-}
+    id: "5a",
+    title: "Program 5A - Unigrams, Bigrams, Trigrams",
+    file: "5a.py",
+    code: `import nltk
+from nltk.util import ngrams
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(6,HIGH);
-  digitalWrite(7,LOW);
-  delay(500);
+nltk.download('punkt')
+nltk.download('punkt_tab')
 
-  digitalWrite(7,HIGH);
-  digitalWrite(6,LOW);
-  delay(500);
-}`
+# Given corpus
+corpus = """
+this is a very good book to study
+"""
+
+# Tokenization
+tokens = nltk.word_tokenize(corpus.lower())
+
+# Keep only words
+tokens = [word for word in tokens if word.isalpha()]
+
+# Generate n-grams
+unigrams = list(ngrams(tokens, 1))
+bigrams = list(ngrams(tokens, 2))
+trigrams = list(ngrams(tokens, 3))
+
+# Display results
+print("Unigrams:")
+print(unigrams)
+
+print("\\nBigrams:")
+print(bigrams)
+
+print("\\nTrigrams:")
+print(trigrams)`
   },
 
   {
-    id: "1b",
-    title: "1B",
-    file: "1b.ino",
-    code: `#define LED_PIN 7
-#define MICROSWITCH_PIN 5
+    id: "5b",
+    title: "Program 5B - Bigram Language Model Probability",
+    file: "5b.py",
+    code: `from collections import Counter
 
-void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(MICROSWITCH_PIN, INPUT);
-  Serial.begin(9600);
-}
+# Corpus
+corpus = [
+    "This is a dog",
+    "This is a cat",
+    "I love my cat",
+    "This is my name"
+]
 
-void loop() {
-  if (digitalRead(MICROSWITCH_PIN) == HIGH) {
-    digitalWrite(LED_PIN, HIGH);
-    Serial.println(1);
-  }
-  else {
-    digitalWrite(LED_PIN, LOW);
-    Serial.println(0);
-  }
-}`
+# Convert corpus into tokens
+tokens = []
+for sentence in corpus:
+    tokens.extend(sentence.lower().split())
+
+# Count unigrams
+unigram_counts = Counter(tokens)
+
+# Create and count bigrams
+bigrams = list(zip(tokens, tokens[1:]))
+bigram_counts = Counter(bigrams)
+
+# Given statement
+statement = "This is my cat"
+words = statement.lower().split()
+
+# Calculate probability using Bigram Language Model
+probability = 1.0
+for i in range(1, len(words)):
+    previous_word = words[i - 1]
+    current_word = words[i]
+    bigram_count = bigram_counts[(previous_word, current_word)]
+    previous_word_count = unigram_counts[previous_word]
+    p = bigram_count / previous_word_count
+    print(f"P({current_word}|{previous_word}) = "
+          f"{bigram_count}/{previous_word_count} = {p}")
+    probability *= p
+
+print("\\nProbability of 'This is my cat' =", probability)`
   },
 
   {
-    id: "1c",
-    title: "1C",
-    file: "1c.ino",
-    code: `void setup()
-{
-  pinMode(7, OUTPUT);
-  Serial.begin(9600);
-  while (!Serial);
-  Serial.println("Input 1 to Turn LED on and 2 to off");
-}
+    id: "6",
+    title: "Program 6 - Stanford Named Entity Recognition (Stanza)",
+    file: "6.py",
+    code: `import stanza
 
-void loop() {
-  if (Serial.available())
-  {
-    int state = Serial.parseInt();
+# Download and initialize Stanza pipeline
+stanza.download('en')
+nlp = stanza.Pipeline(lang='en', processors='tokenize,ner')
 
-    if (state == 1)
-    {
-      digitalWrite(7, HIGH);
-      Serial.println("Command completed LED turned ON");
-    }
+def extract_named_entities(text):
+    """Extract named entities and their types using Stanford NLP."""
+    doc = nlp(text)
+    entities = [(ent.text, ent.type) for ent in doc.entities]
+    return entities
 
-    if (state == 2)
-    {
-      digitalWrite(7, LOW);
-      Serial.println("Command completed LED turned OFF");
-    }
-  }
-}`
+# Example documents
+documents = [
+    "Barack Obama was the 44th President of the United States.",
+    "Microsoft was founded by Bill Gates in 1975.",
+    "The Taj Mahal is located in India."
+]
+
+# Process each document
+for i, doc in enumerate(documents):
+    entities = extract_named_entities(doc)
+    print(f"\\nDocument {i+1}:")
+    print(f"Named Entities: {entities}")`
   },
 
   {
-    id: "2a",
-    title: "2A",
-    file: "2a.ino",
-    code: `int led = 9;
-int brightness = 0;
-int fadeAmount = 5;
+    id: "7",
+    title: "Program 7 - Stopwords Frequency & TF-IDF",
+    file: "7.py",
+    code: `import nltk
+import collections
+from nltk.corpus import stopwords, reuters
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-void setup() {
-  // put your setup code here, to run once:
-  pinMode(led, OUTPUT);
-}
+# Download necessary NLTK datasets
+nltk.download('stopwords')
+nltk.download('reuters')
+nltk.download('punkt')
+nltk.download('punkt_tab')
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  analogWrite(led, brightness);
+# Load English stopwords
+stop_words = set(stopwords.words('english'))
 
-  brightness = brightness + fadeAmount;
+# Load Reuters corpus documents
+documents = [reuters.raw(file_id) for file_id in reuters.fileids()]
 
-  if (brightness == 0 || brightness == 125) {
-    fadeAmount = -fadeAmount;
-  }
+# Function to count stopword occurrences
+def stopword_frequency(documents):
+    stopword_counts = collections.Counter()
 
-  delay(200);
-}`
+    for doc in documents:
+        # Tokenize and convert to lowercase
+        words = nltk.word_tokenize(doc.lower())
+
+        # Count only stopwords
+        stopword_counts.update(
+            word for word in words if word in stop_words
+        )
+
+    return stopword_counts
+
+# Compute stopword frequencies
+stopword_counts = stopword_frequency(documents)
+
+# Print top 10 most common stopwords
+print("\\nMost Frequently Occurring Stopwords:")
+print(stopword_counts.most_common(10))
+
+# Function to compute TF-IDF scores
+def compute_tf_idf(documents):
+    # Stopwords are automatically removed
+    vectorizer = TfidfVectorizer(stop_words='english')
+
+    # Create TF-IDF matrix
+    tfidf_matrix = vectorizer.fit_transform(documents)
+
+    # Get all vocabulary words
+    feature_names = vectorizer.get_feature_names_out()
+
+    # Take the first Reuters document as an example
+    doc_idx = 0
+
+    tfidf_scores = dict(
+        zip(
+            feature_names,
+            tfidf_matrix[doc_idx].toarray().flatten()
+        )
+    )
+
+    # Sort words according to TF-IDF score
+    return sorted(
+        tfidf_scores.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+# Compute TF-IDF
+tfidf_results = compute_tf_idf(documents)
+
+# Print top 10 words with highest TF-IDF scores
+print("\\nTop 10 Important Words Based on TF-IDF:")
+print(tfidf_results[:10])`
   },
 
   {
-    id: "2b",
-    title: "2B",
-    file: "2b.ino",
-    code: `int potPin = A0;
-int gPin = 9;
-int potVal;
-float LEDVal;
+    id: "8",
+    title: "Program 8 - Sentiment Analysis using NLP",
+    file: "8.py",
+    code: `import nltk
+from nltk.corpus import movie_reviews
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
 
-void setup() {
-  pinMode(potPin, INPUT);
-  pinMode(gPin, OUTPUT);
-  Serial.begin(9600);
-}
+# Download NLTK dataset
+nltk.download('movie_reviews')
 
-void loop() {
-  potVal = analogRead(potPin);
-  LEDVal = (255./1023.) * potVal;
+# Load dataset (NLTK Movie Reviews)
+def load_data():
+    docs = []
+    labels = []
 
-  analogWrite(gPin, LEDVal);
+    for category in movie_reviews.categories():
+        for fileid in movie_reviews.fileids(category):
+            docs.append(movie_reviews.raw(fileid))
+            labels.append(category)
 
-  delay(500);
-  Serial.println(LEDVal);
-}`
-  },
+    return docs, labels
 
-  {
-    id: "3a",
-    title: "3A",
-    file: "3a.ino",
-    code: `void setup() {
-  // put your setup code here, to run once:
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-}
+# Load dataset
+X_train, y_train = load_data()
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(5,HIGH);
-  digitalWrite(6,LOW);
-  digitalWrite(7,LOW);
-  delay(4500);
+# Create pipeline: TF-IDF + Naive Bayes
+model = make_pipeline(
+    TfidfVectorizer(stop_words='english'),
+    MultinomialNB()
+)
 
-  digitalWrite(5,LOW);
-  digitalWrite(6,HIGH);
-  digitalWrite(7,LOW);
-  delay(2000);
+# Train the model
+model.fit(X_train, y_train)
 
-  digitalWrite(5,LOW);
-  digitalWrite(6,LOW);
-  digitalWrite(7,HIGH);
-  delay(2800);
-}`
-  },
+# Function to predict sentiment
+def analyze_sentiment(text):
+    prediction = model.predict([text])[0]
+    return f"Predicted Sentiment: {prediction.upper()}"
 
-  {
-    id: "3b",
-    title: "3B",
-    file: "3b.ino",
-    code: `void setup() {
-  // put your setup code here, to run once:
-  pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-}
+# Example sentences
+texts = [
+    "I absolutely loved this movie!",
+    "This was the worst film I've ever seen.",
+    "The storyline was decent, but the acting could have been better."
+]
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(4,HIGH);
-  delay(100);
-
-  digitalWrite(5,HIGH);
-  delay(100);
-
-  digitalWrite(6,HIGH);
-  delay(100);
-
-  digitalWrite(7,HIGH);
-  delay(100);
-
-  digitalWrite(7,LOW);
-  delay(100);
-
-  digitalWrite(6,LOW);
-  delay(100);
-
-  digitalWrite(5,LOW);
-  delay(100);
-
-  digitalWrite(4,LOW);
-  delay(100);
-}`
-  },
-
-  {
-    id: "3c",
-    title: "3C",
-    file: "3c.ino",
-    code: `void setup() {
-  // put your setup code here, to run once:
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-
-  digitalWrite(2,HIGH);
-  delay(1000);
-
-  // Number 2
-  digitalWrite(2,LOW);
-  digitalWrite(3,HIGH);
-  delay(1000);
-
-  // Number 3
-  digitalWrite(3,HIGH);
-  digitalWrite(2,HIGH);
-  delay(1000);
-
-  // Number 4
-  digitalWrite(2,LOW);
-  digitalWrite(3,LOW);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 5
-  digitalWrite(2,HIGH);
-  digitalWrite(3,LOW);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 6
-  digitalWrite(2,LOW);
-  digitalWrite(3,HIGH);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 7
-  digitalWrite(2,HIGH);
-  digitalWrite(3,HIGH);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 8
-  digitalWrite(2,LOW);
-  digitalWrite(3,LOW);
-  digitalWrite(4,LOW);
-  digitalWrite(5,HIGH);
-  delay(1000);
-
-  // Number 9
-  digitalWrite(2,HIGH);
-  digitalWrite(3,LOW);
-  digitalWrite(4,LOW);
-  digitalWrite(5,HIGH);
-  delay(1000);
-
-  // RESET
-  digitalWrite(2,LOW);
-  digitalWrite(3,LOW);
-  digitalWrite(4,LOW);
-  digitalWrite(5,LOW);
-  delay(1000);
-
-  // Number 9
-  digitalWrite(2,HIGH);
-  digitalWrite(3,LOW);
-  digitalWrite(4,LOW);
-  digitalWrite(5,HIGH);
-  delay(1000);
-
-  // Number 8
-  digitalWrite(2,LOW);
-  digitalWrite(3,LOW);
-  digitalWrite(4,LOW);
-  digitalWrite(5,HIGH);
-  delay(1000);
-
-  // Number 7
-  digitalWrite(2,HIGH);
-  digitalWrite(3,HIGH);
-  digitalWrite(4,HIGH);
-  digitalWrite(5,LOW);
-  delay(1000);
-
-  // Number 6
-  digitalWrite(2,LOW);
-  digitalWrite(3,HIGH);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 5
-  digitalWrite(2,HIGH);
-  digitalWrite(3,LOW);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 4
-  digitalWrite(2,LOW);
-  digitalWrite(3,LOW);
-  digitalWrite(4,HIGH);
-  delay(1000);
-
-  // Number 3
-  digitalWrite(3,HIGH);
-  digitalWrite(2,HIGH);
-  digitalWrite(4,LOW);
-  delay(1000);
-
-  // Number 2
-  digitalWrite(2,LOW);
-  digitalWrite(3,HIGH);
-  delay(1000);
-
-  // Number 1
-  digitalWrite(2,HIGH);
-  digitalWrite(3,LOW);
-  delay(1000);
-
-  // RESET
-  digitalWrite(2,LOW);
-  digitalWrite(3,LOW);
-  digitalWrite(4,LOW);
-  digitalWrite(5,LOW);
-  delay(1000);
-}`
+# Perform sentiment analysis
+for i, text in enumerate(texts):
+    result = analyze_sentiment(text)
+    print(f"\\nText {i+1}: {text}")
+    print(result)`
   }
 ];
 
