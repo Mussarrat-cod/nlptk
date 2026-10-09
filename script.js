@@ -7,37 +7,51 @@ const SNIPPETS = [
     id: "5a",
     title: "Program 5A - Unigrams, Bigrams, Trigrams",
     file: "5a.py",
-    code: `import nltk
-from nltk.util import ngrams
+    code: `const int trigPin = 6;
+const int echoPin = 5;
+const int buzzer = 2;
 
-nltk.download('punkt')
-nltk.download('punkt_tab')
+float new_delay;
+long duration;
+int distance;
 
-# Given corpus
-corpus = """
-this is a very good book to study
-"""
+void setup() {
+  Serial.begin(9600);
 
-# Tokenization
-tokens = nltk.word_tokenize(corpus.lower())
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(buzzer, OUTPUT);
+}
 
-# Keep only words
-tokens = [word for word in tokens if word.isalpha()]
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
 
-# Generate n-grams
-unigrams = list(ngrams(tokens, 1))
-bigrams = list(ngrams(tokens, 2))
-trigrams = list(ngrams(tokens, 3))
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(12);
+  digitalWrite(trigPin, LOW);
 
-# Display results
-print("Unigrams:")
-print(unigrams)
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
 
-print("\\nBigrams:")
-print(bigrams)
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
 
-print("\\nTrigrams:")
-print(trigrams)`
+  new_delay = (distance * 3) + 30;
+
+  if (distance > 0 && distance < 50) {
+    digitalWrite(buzzer, HIGH);
+    delay(new_delay);
+
+    digitalWrite(buzzer, LOW);
+    delay(new_delay);
+  } else {
+    digitalWrite(buzzer, LOW);
+  }
+
+  delay(200);
+}`
   },
 
   {
